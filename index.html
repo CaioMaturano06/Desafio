@@ -8,106 +8,102 @@
 </head>
 
 <body>
-  <div class="container">
-    <!-- IMAGEM DO RELÓGIO INCORPORADA -->
-    <img
-      src="c:\Users\caiof\OneDrive\Desktop\COFRE\relogio.png"
-      alt="Relógio digital mostrando 07:15"
-      class="clock-img"
-    >
+  <!-- imagem acima da box -->
+  <div class="img-container">
+    <img src="relogio.png" alt="Relógio digital mostrando 07:15">
+  </div>
 
-    <div class="box">
-      <h1>Desafio do Relógio</h1>
-      <div class="time" id="clock">Horário parado: 07:15</div>
+  <div class="box">
+    <h1>Desafio do Relógio</h1>
+    <div class="time" id="clock">Horário parado: 07:15</div>
 
-      <label for="guess">Quantos minutos faltam para 06:00?</label>
-      <input id="guess" type="text" inputmode="numeric" placeholder="Digite o total em minutos...">
+    <label for="guess">Quantos minutos faltam para 06:00?</label>
+    <input id="guess" type="text" inputmode="numeric" placeholder="Digite o total em minutos...">
 
-      <button id="check">Verificar</button>
-      <button id="reset" class="small-btn" style="display:none">Reiniciar</button>
+    <button id="check">Verificar</button>
+    <button id="reset" class="small-btn" style="display:none">Reiniciar</button>
 
-      <div class="msg" id="msg">—</div>
-      <div class="meta" id="attempts"></div>
-    </div>
+    <div class="msg" id="msg">—</div>
+    <div class="meta" id="attempts"></div>
   </div>
 
 <script>
-const fixedHour = 7, fixedMin = 15;
-const current = fixedHour * 60 + fixedMin;
-const target = 6 * 60; // 06:00
-const correctAnswer = (target - current + 24*60) % (24*60); // 1365 minutos
+  const fixedHour = 7, fixedMin = 15;
+  const current = fixedHour * 60 + fixedMin;
+  const target = 6 * 60;
+  const correctAnswer = (target - current + 24*60) % (24*60); // 1365 minutos
 
-const guessEl = document.getElementById('guess');
-const msgEl = document.getElementById('msg');
-const attemptsEl = document.getElementById('attempts');
-const checkBtn = document.getElementById('check');
-const resetBtn = document.getElementById('reset');
+  const guessEl = document.getElementById('guess');
+  const msgEl = document.getElementById('msg');
+  const attemptsEl = document.getElementById('attempts');
+  const checkBtn = document.getElementById('check');
+  const resetBtn = document.getElementById('reset');
 
-let attempts = 0;
+  let attempts = 0;
 
-function formatHM(total) {
-  const h = Math.floor(total / 60);
-  const m = total % 60;
-  return `${h} h ${m} min`;
-}
-
-function normalizeInput(raw) {
-  if (!raw) return '';
-  return raw.replace(/[.,\s]/g, '');
-}
-
-function check() {
-  const raw = guessEl.value.trim();
-  const norm = normalizeInput(raw);
-
-  if (norm === '') {
-    msgEl.textContent = 'Digite um número válido!';
-    msgEl.style.color = 'red';
-    return;
+  function formatHM(total) {
+    const h = Math.floor(total / 60);
+    const m = total % 60;
+    return `${h} h ${m} min`;
   }
 
-  const user = parseInt(norm, 10);
-  if (Number.isNaN(user)) {
-    msgEl.textContent = 'Entrada inválida.';
-    msgEl.style.color = 'red';
-    return;
+  function normalizeInput(raw) {
+    if (!raw) return '';
+    return raw.replace(/[.,\s]/g, '');
   }
 
-  attempts++;
-  attemptsEl.textContent = `Tentativas: ${attempts}`;
+  function check() {
+    const raw = guessEl.value.trim();
+    const norm = normalizeInput(raw);
 
-  if (user === correctAnswer) {
-    msgEl.textContent = `🎉 Parabéns! Acertou: ${correctAnswer} minutos (${formatHM(correctAnswer)})`;
-    msgEl.style.color = 'green';
-    checkBtn.disabled = true;
-    guessEl.disabled = true;
-    resetBtn.style.display = 'block';
-  } else {
-    msgEl.textContent = '❌ Errado — tente novamente.';
-    msgEl.style.color = 'red';
+    if (norm === '') {
+      msgEl.textContent = 'Digite um número válido!';
+      msgEl.style.color = 'red';
+      return;
+    }
+
+    const user = parseInt(norm, 10);
+    if (Number.isNaN(user)) {
+      msgEl.textContent = 'Entrada inválida.';
+      msgEl.style.color = 'red';
+      return;
+    }
+
+    attempts++;
+    attemptsEl.textContent = `Tentativas: ${attempts}`;
+
+    if (user === correctAnswer) {
+      msgEl.textContent = `🎉 Parabéns! Acertou: ${correctAnswer} minutos (${formatHM(correctAnswer)})`;
+      msgEl.style.color = 'green';
+      checkBtn.disabled = true;
+      guessEl.disabled = true;
+      resetBtn.style.display = 'block';
+    } else {
+      msgEl.textContent = '❌ Errado — tente novamente.';
+      msgEl.style.color = 'red';
+      guessEl.focus();
+      guessEl.select();
+    }
+  }
+
+  checkBtn.addEventListener('click', check);
+  guessEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') check();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    attempts = 0;
+    attemptsEl.textContent = '';
+    msgEl.textContent = '—';
+    msgEl.style.color = 'initial';
+    guessEl.value = '';
+    guessEl.disabled = false;
+    checkBtn.disabled = false;
+    resetBtn.style.display = 'none';
     guessEl.focus();
-    guessEl.select();
-  }
-}
+  });
 
-checkBtn.addEventListener('click', check);
-guessEl.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') check();
-});
-
-resetBtn.addEventListener('click', () => {
-  attempts = 0;
-  attemptsEl.textContent = '';
-  msgEl.textContent = '—';
-  msgEl.style.color = 'initial';
-  guessEl.value = '';
-  guessEl.disabled = false;
-  checkBtn.disabled = false;
-  resetBtn.style.display = 'none';
   guessEl.focus();
-});
-
-guessEl.focus();
 </script>
 </body>
 </html>
